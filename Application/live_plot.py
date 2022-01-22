@@ -31,5 +31,3 @@ class Plotter:
     def add_value(self, value):
         self._y.append(value)
         self._update()
-
-
