@@ -1,4 +1,7 @@
+import matplotlib.pyplot as plt
+
 from servo import rhServo
+from live_plot import Plotter
 import time
 
 import numpy as np
@@ -25,23 +28,31 @@ if __name__ == '__main__':
     t0 = time.time()
     dt = 0.1
 
-    test_servo = rhServo()
+    plotter = Plotter()
+    plt.show()
+
+    test_servo = rhServo(debug=True)
     # --- Servo lifetime example --- #
-    test_servo.open()  # open
+    test_servo.open()
 
     while True:
         try:
             # get set point from test_loop()
             control = test_loop()
-            # propagate to servo.
-            test_servo.set_control(*control)
 
-            # read sensor output.
-            sense = test_servo.get_sense()
+            try:
+                # propagate to servo.
+                test_servo.set_control(control)
+
+                # read sensor output.
+                sense = test_servo.get_sense()
+
+            except BaseException as err:
+                print(str(err))
+
             # do something with it.
-            print(sense)
-
-            time.sleep(dt)
+            plotter.add_value(sense[1] * 100)
+            print(sense[0])
 
         except KeyboardInterrupt:
             test_servo.close()
