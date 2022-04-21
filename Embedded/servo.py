@@ -1,6 +1,8 @@
 import serial
 import time
 
+DEBUG = True
+
 
 # --- SERVO CLASS AND INTERFACE DEFINITIONS --- #
 class Servo:
@@ -58,7 +60,8 @@ class Servo:
 
 
 # --- SERIAL INTERFACE AND DEFINITIONS --- #
-my_ports = ['/dev/cu.usbmodem14101', '/dev/cu.usbmodem14201']
+#my_ports = ['/dev/cu.usbmodem14101', '/dev/cu.usbmodem14201']
+my_ports = ['COM3', 'COM5']
 
 # Common Command definitions for all serial servos comprise commands [0,7]
 # Specific commands exist for [8, 15].
@@ -93,12 +96,15 @@ def validate_identifier(ser, identifier):
     write_serial(ser, GET_ID)
     found_identifier = int.from_bytes(ser.read(2), byteorder='big')
 
+    if DEBUG:
+        print(found_identifier)
+
     # Compare the received identifier to the device's
     if found_identifier != identifier:
         raise ValueError('Found device with address {}, not {}'.format(found_identifier, identifier))
 
 
-def connect_serial(identifier, debug=False, baudrate=9600, timeout=1):
+def connect_serial(identifier, debug=DEBUG, baudrate=9600, timeout=1):
     """Scan all available serial ports to find one which passes device validation."""
     ser = None
 
@@ -125,7 +131,7 @@ def connect_serial(identifier, debug=False, baudrate=9600, timeout=1):
             ser = None
 
     if ser is None:
-        raise serial.SerialException("Could not find the desired device on any defined port.")
+        raise serial.SerialException("Could not find device {0} on any defined port.".format(identifier))
 
 
 class SerialServo(Servo):
@@ -173,7 +179,7 @@ class SerialServo(Servo):
 
 
 class rhServo(SerialServo):
-    IDENTIFIER = 18756
+    IDENTIFIER = int.from_bytes(b"\x49\x44", "big")
 
     N_CMD_BITS = 4
     N_ERR_BITS = 4

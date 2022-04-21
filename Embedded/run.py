@@ -20,7 +20,7 @@ def test_loop():
 
 if __name__ == '__main__':
     import serial
-    ser = serial.Serial('/dev/cu.usbmodem14101', baudrate=9600, timeout=1)
+    ser = serial.Serial('COM3', baudrate=9600, timeout=1)
 
     t0 = time.time()
     dt = 0.1
