@@ -4,13 +4,16 @@ from time import time, sleep
 from collections import deque
 
 
+class StateVector:
+    """A state vector is an aggregate """
+
 class BufferedParameter(float):
 
-    def __init__(self, initial_value=None, size=4):
+    def __init__(self, dim=1, initial_value=None, size=4):
         """Descriptor class for managing a stream of information. """
 
         self._size = size
-        self._buffer = deque([float("nan") for _ in range(size)], maxlen=size)
+        self._buffer = deque([np.NaN * np.zeros(dim) for _ in range(size)], maxlen=size)
 
         if initial_value is not None:
             self.__set__(self, initial_value)
